@@ -31,7 +31,7 @@
                 dataType: option.dataType || 'json',
                 success: function (data) {
 
-                    option.DataResolve && option.DataResolve.call(that, data);//处理数据
+                    option.dataResolve && option.dataResolve.call(that, data);//处理数据
 
                     var canContinue = option.canContinue.call(that, data);
 

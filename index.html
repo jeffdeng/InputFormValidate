@@ -1,3 +1,4 @@
+<script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="InputForm.js"></script>
 
 <script type="text/javascript">
@@ -6,18 +7,11 @@
         selector:'#username',
         ruletype:'username',
         ruleSuccess: function (obj) {
-            obj.parent().next().find('span').text('');
-            obj.parent().next('.errusername').find('.warn-ico').hide();
-            obj.removeClass('errTip');
-            obj.siblings('.right-ico').show();
+            obj.parent().next().find('span').text('');     
         },
         ruleFail: function (obj) {
-            var obj = $(this.selector);
-            obj.parent().next('.errusername').addClass('errTip');
             obj.parent().next('.errusername').find('span').text('手机号格式不正确');
-            obj.parent().next('.errusername').find('.warn-ico').show();
-            obj.addClass('errTip');
-            obj.siblings('.right-ico').hide();
+           
         },
     });
 
@@ -26,16 +20,11 @@
         ruletype:'password',
         ruleSuccess: function (obj) {
             obj.parent().next().find('span').text('');
-            obj.parent().next('.errpsw').find('.warn-ico').hide();
-            obj.removeClass('errTip');
-            obj.siblings('.right-ico').show();
+          
         },
         ruleFail: function (obj) {
-            obj.parent().next('.errpsw').addClass('errTip');
             obj.parent().next('.errpsw').find('span').text('密码不少于6-18位，必须包含英文字母和数字');
-            obj.parent().next('.errpsw').find('.warn-ico').show();
-            obj.addClass('errTip');
-            obj.siblings('.right-ico').hide();
+           
         },
     });
 
@@ -65,10 +54,8 @@
         DataResolve:  function (data) {
             if (data && data.status == "success") {
                 this.checkResult = false;
-                $('#username').addClass('errTip');
-                $('#username').parent().next('.errusername').addClass('errTip');
                 $('#username').parent().next('.errusername').find('span').text('手机号已注册');
-                $('#username').siblings('.right-ico').hide();
+              
             }
         },
         canContinue:function (data) {
@@ -93,10 +80,8 @@
                 this.checkResult = true;
             } else {
                 this.checkResult = false;
-                $('#Valicode').parent().next('.piccode').addClass('errTip');
                 $('#Valicode').parent().next('.piccode').find('span').text(data.message);
-                $('#Valicode').parent().next('.piccode').find('.warn-ico').show();
-                $('#Valicode').addClass('errTip');
+             
             }
         },
         canContinue:function (data) {
@@ -120,10 +105,8 @@
         },
         DataResolve:  function (data) {
             if (data && data.status == "fail") {
-                $('#code').parent().next('.errverifical').addClass('errTip');
                 $('#code').parent().next('.errverifical').find('span').text('手机验证码错误');
-                $('#code').parent().next('.errverifical').find('.warn-ico').show();
-                $('#code').addClass('errTip');
+              
             } else {
                 submitForm();
             }
