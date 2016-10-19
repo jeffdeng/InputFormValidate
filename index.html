@@ -1,0 +1,153 @@
+<script type="text/javascript" src="InputForm.js"></script>
+
+<script type="text/javascript">
+    //input配置部分
+    var usernameInput = new InputClass({
+        selector:'#username',
+        ruletype:'username',
+        ruleSuccess: function (obj) {
+            obj.parent().next().find('span').text('');
+            obj.parent().next('.errusername').find('.warn-ico').hide();
+            obj.removeClass('errTip');
+            obj.siblings('.right-ico').show();
+        },
+        ruleFail: function (obj) {
+            var obj = $(this.selector);
+            obj.parent().next('.errusername').addClass('errTip');
+            obj.parent().next('.errusername').find('span').text('手机号格式不正确');
+            obj.parent().next('.errusername').find('.warn-ico').show();
+            obj.addClass('errTip');
+            obj.siblings('.right-ico').hide();
+        },
+    });
+
+    var passwordInput = new InputClass({
+        selector:'#password',
+        ruletype:'password',
+        ruleSuccess: function (obj) {
+            obj.parent().next().find('span').text('');
+            obj.parent().next('.errpsw').find('.warn-ico').hide();
+            obj.removeClass('errTip');
+            obj.siblings('.right-ico').show();
+        },
+        ruleFail: function (obj) {
+            obj.parent().next('.errpsw').addClass('errTip');
+            obj.parent().next('.errpsw').find('span').text('密码不少于6-18位，必须包含英文字母和数字');
+            obj.parent().next('.errpsw').find('.warn-ico').show();
+            obj.addClass('errTip');
+            obj.siblings('.right-ico').hide();
+        },
+    });
+
+
+    //一个{}配置一个ajax，可以配置localcheckRule本地检查之后返回true才能执行ajax,
+    // canContinue方法获取到后台数据后 返回true继续执行then后面的ajax请求，否者停止
+    var ajaxCodeInput = ajaxInput({
+        type:'post',
+        selector:'.getcode',
+        ievent:'click',
+        url:gYiiCreateUrl('user', 'RegisteredVerify'),
+        localcheckRule:  function () {
+            if(usernameInput.checkRuleAndCallBack && !usernameInput.checkRuleAndCallBack()){
+                return false;
+            }
+
+            if(picodeInput.checkRuleAndCallBack && !picodeInput.checkRuleAndCallBack()){
+                return false;
+            }
+            return true;
+        },
+        getSendData: function () {
+            return {
+                username:$('#username').val().trim()
+            };
+        },
+        DataResolve:  function (data) {
+            if (data && data.status == "success") {
+                this.checkResult = false;
+                $('#username').addClass('errTip');
+                $('#username').parent().next('.errusername').addClass('errTip');
+                $('#username').parent().next('.errusername').find('span').text('手机号已注册');
+                $('#username').siblings('.right-ico').hide();
+            }
+        },
+        canContinue:function (data) {
+            if (data && data.status == "success") {
+                return false;
+            }
+            return true; //走then
+        },
+    }).then({
+        type:'get',
+        url:gYiiCreateUrl('ajax', 'SendRegisterCode'),
+        getSendData: function () {
+            return {
+                mobile:$('#username').val().trim(),
+                valiCode:$('#Valicode').val().trim()
+            };
+        },
+        DataResolve:  function (data) {
+            if (data.status == "success") {
+                showtime();
+
+                this.checkResult = true;
+            } else {
+                this.checkResult = false;
+                $('#Valicode').parent().next('.piccode').addClass('errTip');
+                $('#Valicode').parent().next('.piccode').find('span').text(data.message);
+                $('#Valicode').parent().next('.piccode').find('.warn-ico').show();
+                $('#Valicode').addClass('errTip');
+            }
+        },
+        canContinue:function (data) {
+            return false;
+        },
+    }).done();
+
+    var inputArr = [usernameInput,passwordInput,ajaxCodeInput];
+
+    //后面不写done ,而是在提交的时候立即执行ajax，用request();,
+    // ajaxSubmitInput 不加入inputArr 数组，是做为提交的ajax回调使用
+    var ajaxSubmitInput = ajaxInput({
+        type:'get',
+        url:gYiiCreateUrl('ajax', 'CheckVerifyCode'),
+        dataType: 'json',
+        getSendData: function () {
+            return  {
+                mobile: $('#username').val().trim(),
+                code:$('#code').val().trim()
+            };
+        },
+        DataResolve:  function (data) {
+            if (data && data.status == "fail") {
+                $('#code').parent().next('.errverifical').addClass('errTip');
+                $('#code').parent().next('.errverifical').find('span').text('手机验证码错误');
+                $('#code').parent().next('.errverifical').find('.warn-ico').show();
+                $('#code').addClass('errTip');
+            } else {
+                submitForm();
+            }
+        },
+        canContinue:function (data) {
+            return false;
+        },
+    });
+
+    //form表单配置部分配置部分
+    var loginObj = new FormClass( {
+        selector:'#registerSmtBtn', //提交按钮
+        initCallback: null,//new初始化后调用
+        inputArr:inputArr,
+        submitCallback:function () {
+            ajaxSubmitInput.request(); //发起嵌套ajax请求
+        }
+    });
+
+   
+
+    var submitForm = function () {
+       ///
+    }
+
+
+</script>
