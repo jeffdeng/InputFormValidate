@@ -10,6 +10,16 @@
 
 特别是真对ajax嵌套ajax,有些嵌套3个以上的，逻辑相对不清晰。我这里做了ajax嵌套扁平化处理，逻辑变更要去掉一个ajax嵌套也很容易，代码可维护下大大增加。
    
+    
+    var ajaxCodeInput = ajaxInput({ //ajax 配置 }).
+    .then({ //ajax 配置 })
+    .then({ //ajax 配置 })
+    .done();
+    
+    //ajaxCodeInput 提供一个接口checkRuleAndCallBack给form表单做验证，form提交的时候调用每个input的checkRuleAndCallBack检查是否能提交和正则校验。
+
+####这样开发，具体例子如下
+
     var ajaxCodeInput = ajaxInput({
         type:'post',
         selector:'.getcode',
